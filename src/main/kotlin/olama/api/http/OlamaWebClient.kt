@@ -12,35 +12,36 @@ import org.springframework.web.reactive.function.client.WebClient
 @Component
 class OlamaWebClient(val webClient: WebClient, val objectMapper: ObjectMapper) {
 
-    private var olamaUser : AuthOlamaUser? = null;
+    private var olamaUser: AuthOlamaUser? = null;
 
     // https://docs.openwebui.com/getting-started/env-configuration
-    fun authorize() : AuthOlamaUser? {
+    fun authorize(): AuthOlamaUser? {
         // todo: научиться login
         val authUrl = "/api/v1/auths/signin"
         val body = webClient.post()
-                .uri(authUrl)
-                .body(BodyInserters.fromValue("{\"email\":\"\",\"password\":\"\"}"))
-                .header(HttpHeaders.CONTENT_TYPE, "application/json")
-                .retrieve()
-                .bodyToMono(AuthOlamaUser::class.java)
-                .block()
+            .uri(authUrl)
+            .body(BodyInserters.fromValue("{\"email\":\"\",\"password\":\"\"}"))
+            .header(HttpHeaders.CONTENT_TYPE, "application/json")
+            .retrieve()
+            .bodyToMono(AuthOlamaUser::class.java)
+            .block()
 
         olamaUser = body
-        return olamaUser;
+        return olamaUser
     }
 
     fun <T> get(url: String, aClass: Class<T>): T? {
-        if (olamaUser == null) {
-            authorize();
+        if (olamaUser == null){
+            authorize()
         }
+        val token = (olamaUser?.token_type ?: "") + " " + (olamaUser?.token ?: "");
         val body = webClient.get()
-                .uri(url)
-                .header("authorization", (olamaUser?.token_type ?: "" ) + " " + (olamaUser?.token ?: "" ))
-                .retrieve()
-                .bodyToMono(aClass)
-                .block()
+            .uri(url)
+            .header("authorization", token)
+            .retrieve()
+            .bodyToMono(aClass)
+            .block()
 
-        return body;
+        return body
     }
 }
