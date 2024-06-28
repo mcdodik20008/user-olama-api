@@ -1,14 +1,10 @@
 package olama.api.http
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import javassist.NotFoundException
 import olama.api.http.auth.AuthService
-import olama.api.telegram.model.olama.user.AuthOlamaUser
 import org.jvnet.hk2.annotations.Service
-import org.springframework.data.crossstore.ChangeSetPersister
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
-import org.springframework.web.client.HttpClientErrorException.NotFound
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
 
@@ -61,7 +57,7 @@ class OlamaWebClient(val authService: AuthService, val webClient: WebClient, val
         return body;
     }
 
-    fun <T> del(url: String, jsonBody:String, aClass: Class<T>): T {
+    fun <T> del(url: String, aClass: Class<T>): T {
         val body = webClient.delete()
             .uri(url)
             .header("authorization", getToken())
@@ -75,8 +71,8 @@ class OlamaWebClient(val authService: AuthService, val webClient: WebClient, val
         return body;
     }
 
-    fun getToken():String{
+    private fun getToken():String{
         val authUser = authService.getAuthUser()
-        return (authUser?.token_type ?: "") + " " + (authUser.token ?: "");
+        return (authUser.token_type ?: "") + " " + (authUser.token ?: "")
     }
 }

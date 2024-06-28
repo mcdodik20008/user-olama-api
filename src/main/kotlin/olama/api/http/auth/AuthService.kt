@@ -1,6 +1,5 @@
 package olama.api.http.auth
 
-import olama.api.http.OlamaWebClient
 import olama.api.telegram.model.olama.user.AuthOlamaUser
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
@@ -13,11 +12,7 @@ class AuthService(val webClient: WebClient) {
     private var olamaUser: AuthOlamaUser? = null;
 
     fun getAuthUser(): AuthOlamaUser {
-        if (olamaUser != null) {
-            return olamaUser as AuthOlamaUser;
-        
-        }
-        return authorize();
+        return olamaUser ?: authorize()
     }
 
     // https://docs.openwebui.com/getting-started/env-configuration
@@ -35,4 +30,5 @@ class AuthService(val webClient: WebClient) {
         olamaUser = body
         return olamaUser as AuthOlamaUser
     }
+
 }
