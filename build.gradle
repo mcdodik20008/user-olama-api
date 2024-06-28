@@ -25,7 +25,8 @@ ext {
 
 dependencies {
     // https://mvnrepository.com/artifact/org.telegram/telegrambots-spring-boot-starter
-    implementation group: 'org.telegram', name: 'telegrambots-spring-boot-starter', version: '6.7.0'
+    implementation 'org.telegram:telegrambots-spring-boot-starter:6.8.0'
+    implementation 'org.telegram:telegrambotsextensions:6.8.0'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
 	implementation 'org.springframework.boot:spring-boot-starter-quartz'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
