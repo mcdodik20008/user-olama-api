@@ -9,3 +9,4 @@ class OlamaApiApplication
 fun main(args: Array<String>) {
 	runApplication<OlamaApiApplication>(*args)
 }
+
