@@ -16,10 +16,15 @@ class AvailableModels(var commander: Commander, var olamaWebClient: OlamaWebClie
     BotCommand(AVAILABLE_MODELS.text, "Описание команды") {
 
     override fun execute(absSender: AbsSender, user: User, chat: Chat, arguments: Array<out String>) {
-        val modelsMono = olamaWebClient.get("/api/models", OlamaModels::class.java)
-        val nameModels = modelsMono.data.map { x -> x.id }
-        val message = textEditor.createMarkdownList(nameModels.orEmpty())
-        absSender.execute(commander.createMessage(chat.id.toString(), message))
+        try {
+            val modelsMono = olamaWebClient.get("/api/models", OlamaModels::class.java)
+            modelsMono.subscribe { models ->
+                val nameModels = models?.data?.map { x -> x.id }
+                val message = textEditor.createMarkdownList(nameModels.orEmpty())
+                absSender.execute(commander.createMessage(chat.id.toString(), message))
+            }
+        } catch (e: Exception) {
+            absSender.execute(commander.createMessage(chat.id.toString(), "Произошла ошибка при получении моделей: ${e.message}"))
+        }
     }
-
 }
