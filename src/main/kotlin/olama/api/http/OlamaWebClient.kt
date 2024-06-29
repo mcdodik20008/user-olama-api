@@ -1,6 +1,5 @@
 package olama.api.http
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import olama.api.http.auth.AuthService
 import org.jvnet.hk2.annotations.Service
 import org.springframework.http.HttpHeaders
@@ -10,7 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient
 
 @Service
 @Component
-class OlamaWebClient(val authService: AuthService, val webClient: WebClient, val objectMapper: ObjectMapper) {
+class OlamaWebClient(val authService: AuthService, val webClient: WebClient) {
 
     fun <T> get(url: String, aClass: Class<T>): T {
         val body = webClient.get()
@@ -26,8 +25,6 @@ class OlamaWebClient(val authService: AuthService, val webClient: WebClient, val
     }
 
     fun <T> post(url: String, jsonBody:String, aClass: Class<T>): T {
-        // todo: научиться login
-        val authUrl = "/api/v1/auths/signin"
         val body = webClient.post()
             .uri(url)
             .body(BodyInserters.fromValue(jsonBody))
@@ -73,6 +70,6 @@ class OlamaWebClient(val authService: AuthService, val webClient: WebClient, val
 
     private fun getToken():String{
         val authUser = authService.getAuthUser()
-        return (authUser.token_type ?: "") + " " + (authUser.token ?: "")
+        return (authUser.tokenType ?: "") + " " + (authUser.token ?: "")
     }
 }

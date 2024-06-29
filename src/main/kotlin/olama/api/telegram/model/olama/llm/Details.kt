@@ -1,10 +1,15 @@
 package olama.api.telegram.model.olama.llm
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class Details(
     val families: List<String>,
     val family: String,
     val format: String,
-    val parameter_size: String,
-    val parent_model: String,
-    val quantization_level: String
+    @JsonProperty("parameter_size")
+    val parameterSize: String,
+    @JsonProperty("parent_model")
+    val parentModel: String,
+    @JsonProperty("quantization_level")
+    val quantizationLevel: String
 )

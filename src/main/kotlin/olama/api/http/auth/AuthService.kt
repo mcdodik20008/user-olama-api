@@ -15,7 +15,6 @@ class AuthService(val webClient: WebClient) {
         return olamaUser ?: authorize()
     }
 
-    // https://docs.openwebui.com/getting-started/env-configuration
     private fun authorize(): AuthOlamaUser {
         // todo: научиться login
         val authUrl = "/api/v1/auths/signin"

@@ -9,8 +9,9 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
 @Configuration
 class BotConfig {
     @Bean
-    fun telegramBotsApi(bot: TelegaBot): TelegramBotsApi =
-            TelegramBotsApi(DefaultBotSession::class.java).apply {
-                registerBot(bot)
-            }
+    fun telegramBotsApi(bot: TelegaBot): TelegramBotsApi {
+        return TelegramBotsApi(DefaultBotSession::class.java).apply {
+            registerBot(bot)
+        }
+    }
 }
