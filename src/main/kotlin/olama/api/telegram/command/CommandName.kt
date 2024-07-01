@@ -4,5 +4,6 @@ enum class CommandName(val text: String) {
     START("start"),
     SUM("sum"),
     BUTTONS("buttons"),
-    AVAILABLE_MODELS("availableModels"),
+    AVAILABLE_MODELS("availablemodels"),
+    NEW_CHAT("newchat"),
 }

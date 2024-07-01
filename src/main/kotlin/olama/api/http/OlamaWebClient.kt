@@ -12,41 +12,41 @@ import reactor.core.publisher.Mono
 @Component
 class OlamaWebClient(val authService: AuthService, val webClient: WebClient) {
 
-    fun get(url: String): Mono<String> {
+    fun <T> get(url: String, aClass: Class<T>): Mono<T> {
         return webClient.get()
                 .uri(url)
                 .header("authorization", getToken())
                 .retrieve()
-                .bodyToMono(String::class.java)
+                .bodyToMono(aClass)
     }
 
-    fun post(url: String, jsonBody: String): Mono<String> {
+    fun <T> post(url: String, jsonBody: String, aClass: Class<T>): Mono<T> {
         return webClient.post()
                 .uri(url)
                 .body(BodyInserters.fromValue(jsonBody))
                 .header("authorization", getToken())
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .retrieve()
-                .bodyToMono(String::class.java)
+                .bodyToMono(aClass)
     }
 
-    fun put(url: String, jsonBody: String): Mono<String> {
+    fun <T> put(url: String, jsonBody: String, aClass: Class<T>): Mono<T> {
         return webClient.put()
                 .uri(url)
                 .body(BodyInserters.fromValue(jsonBody))
                 .header("authorization", getToken())
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .retrieve()
-                .bodyToMono(String::class.java)
+                .bodyToMono(aClass)
     }
 
-    fun del(url: String): Mono<String> {
+    fun <T> del(url: String, aClass: Class<T>): Mono<T> {
         return webClient.delete()
                 .uri(url)
                 .header("authorization", getToken())
                 .header(HttpHeaders.CONTENT_TYPE, "application/json")
                 .retrieve()
-                .bodyToMono(String::class.java)
+                .bodyToMono(aClass)
     }
 
     private fun getToken(): String {

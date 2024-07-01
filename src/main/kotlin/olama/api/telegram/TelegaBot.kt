@@ -11,12 +11,10 @@ import org.telegram.telegrambots.meta.api.objects.Update
 class TelegaBot(
         commands: Set<BotCommand>,
         @Value("\${telegram.token}") token: String,
+        @Value("\${telegram.botName}") val botName: String = "",
         var commander: Commander
 ) : TelegramLongPollingCommandBot(token) {
-
-    @Value("\${telegram.botName}")
-    private val botName: String = ""
-
+    
     override fun getBotUsername(): String = botName
 
     override fun processNonCommandUpdate(update: Update) {
