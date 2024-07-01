@@ -12,45 +12,44 @@ import reactor.core.publisher.Mono
 @Component
 class OlamaWebClient(val authService: AuthService, val webClient: WebClient) {
 
-    fun <T> get(url: String, aClass: Class<T>): Mono<T> {
+    fun get(url: String): Mono<String> {
         return webClient.get()
-            .uri(url)
-            .header("authorization", getToken())
-            .retrieve()
-            .bodyToMono(aClass)
+                .uri(url)
+                .header("authorization", getToken())
+                .retrieve()
+                .bodyToMono(String::class.java)
     }
 
-    fun <T> post(url: String, jsonBody:String, aClass: Class<T>): Mono<T> {
+    fun post(url: String, jsonBody: String): Mono<String> {
         return webClient.post()
-            .uri(url)
-            .body(BodyInserters.fromValue(jsonBody))
-            .header("authorization", getToken())
-            .header(HttpHeaders.CONTENT_TYPE, "application/json")
-            .retrieve()
-            .bodyToMono(aClass)
-
+                .uri(url)
+                .body(BodyInserters.fromValue(jsonBody))
+                .header("authorization", getToken())
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .retrieve()
+                .bodyToMono(String::class.java)
     }
 
-    fun <T> put(url: String, jsonBody:String, aClass: Class<T>): Mono<T> {
+    fun put(url: String, jsonBody: String): Mono<String> {
         return webClient.put()
-            .uri(url)
-            .body(BodyInserters.fromValue(jsonBody))
-            .header("authorization", getToken())
-            .header(HttpHeaders.CONTENT_TYPE, "application/json")
-            .retrieve()
-            .bodyToMono(aClass)
+                .uri(url)
+                .body(BodyInserters.fromValue(jsonBody))
+                .header("authorization", getToken())
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .retrieve()
+                .bodyToMono(String::class.java)
     }
 
-    fun <T> del(url: String, aClass: Class<T>): Mono<T> {
+    fun del(url: String): Mono<String> {
         return webClient.delete()
-            .uri(url)
-            .header("authorization", getToken())
-            .header(HttpHeaders.CONTENT_TYPE, "application/json")
-            .retrieve()
-            .bodyToMono(aClass)
+                .uri(url)
+                .header("authorization", getToken())
+                .header(HttpHeaders.CONTENT_TYPE, "application/json")
+                .retrieve()
+                .bodyToMono(String::class.java)
     }
 
-    private fun getToken():String{
+    private fun getToken(): String {
         val authUser = authService.getAuthUser()
         return authUser.tokenType + " " + authUser.token
     }
