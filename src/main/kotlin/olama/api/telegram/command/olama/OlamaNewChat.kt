@@ -4,16 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import olama.api.http.OlamaWebClient
 import olama.api.http.auth.AuthService
 import olama.api.telegram.command.CommandName.NEW_CHAT
+import olama.api.telegram.model.ChatCreate
+import olama.api.telegram.model.ChatForm
 import olama.api.telegram.model.ChatResponse
-import olama.api.telegram.model.OChat
 import olama.api.telegram.service.Commander
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand
 import org.telegram.telegrambots.meta.api.objects.Chat
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.bots.AbsSender
-import java.time.LocalDate
-import java.util.*
 
 @Component
 class OlamaNewChat(
@@ -29,21 +28,18 @@ class OlamaNewChat(
         val body = jacksonObjectMapper.writeValueAsString(oChat)
         val modelsMono = olamaWebClient.post("api/v1/chats/new", body, ChatResponse::class.java)
 
-        modelsMono.subscribe { oChat ->
-            absSender.execute(commander.createMessage(chat.id.toString(), "Чат ${oChat.title} создан"))
+        modelsMono.subscribe { aChat ->
+            absSender.execute(commander.createMessage(chat.id.toString(), "Чат ${aChat.title} создан"))
         }
-
-
     }
 
-    private fun olamaChat(arguments: Array<out String>): OChat {
-        return OChat(
-                UUID.randomUUID().toString(),
-                authService.getAuthUser().id,
-                arguments.joinToString { " " },
+    private fun olamaChat(arguments: Array<out String>): ChatCreate {
+        val chatFrom = ChatForm(
                 "",
-                LocalDate.now().toEpochDay().toString().toLong(),
-                LocalDate.now().toEpochDay().toString().toLong(),
-        )
+                listOf("llama3:latest"),
+                1,
+                arguments.joinToString(separator = " ")
+        );
+        return ChatCreate(chatFrom)
     }
 }
