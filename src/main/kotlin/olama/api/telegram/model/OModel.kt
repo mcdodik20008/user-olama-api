@@ -21,21 +21,21 @@ data class Ollama(
         val name: String,
         val model: String,
         @JsonProperty("modified_at")
-        val modifiedAt: String,
-        val size: Long,
-        val digest: String,
-        val details: Details,
-        val urls: List<Int>
+        val modifiedAt: String?,
+        val size: Long?,
+        val digest: String?,
+        val details: Details?,
+        val urls: List<Int>?
 )
 
 data class Details(
-        val parentModel: String,
-        val format: String,
-        val family: String,
-        val families: List<String>,
+        val parentModel: String?,
+        val format: String?,
+        val family: String?,
+        val families: List<String>?,
         @JsonProperty("parameter_size")
-        val parameterSize: String,
+        val parameterSize: String?,
         @JsonProperty("quantization_level")
-        val quantizationLevel: String
+        val quantizationLevel: String?
 )
 

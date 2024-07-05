@@ -2,44 +2,141 @@ package olama.api.telegram.command.olama;
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import olama.api.http.OlamaWebClient
-import olama.api.http.auth.AuthService
 import olama.api.telegram.command.CommandName.NEW_CHAT
-import olama.api.telegram.model.ChatCreate
-import olama.api.telegram.model.ChatForm
-import olama.api.telegram.model.ChatResponse
+import olama.api.telegram.model.chat.ChatRequest
+import olama.api.telegram.model.chat.OChat
 import olama.api.telegram.service.Commander
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand
 import org.telegram.telegrambots.meta.api.objects.Chat
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.bots.AbsSender
+import java.util.*
 
 @Component
 class OlamaNewChat(
         var commander: Commander,
         var olamaWebClient: OlamaWebClient,
-        var authService: AuthService,
         private val jacksonObjectMapper: ObjectMapper
-) :
-        BotCommand(NEW_CHAT.text, "Описание команды") {
+) : BotCommand(NEW_CHAT.text, "Описание команды") {
+
+    val nameToChat: MutableMap<String, String> = HashMap()
 
     override fun execute(absSender: AbsSender, user: User, chat: Chat, arguments: Array<out String>) {
-        val oChat = olamaChat(arguments)
-        val body = jacksonObjectMapper.writeValueAsString(oChat)
-        val modelsMono = olamaWebClient.post("api/v1/chats/new", body, ChatResponse::class.java)
-
-        modelsMono.subscribe { aChat ->
-            absSender.execute(commander.createMessage(chat.id.toString(), "Чат ${aChat.title} создан"))
+        // Создаём чат
+        var newChat = createNewChat(arguments, user.userName)
+        var body = jacksonObjectMapper.writeValueAsString(newChat)
+        // Сохраним созданный чат, либо получим уже существующий
+        if (!nameToChat.containsKey(user.userName)) {
+            newChat = olamaWebClient.post("api/v1/chats/new", body, OChat::class.java).block()!!
+            nameToChat[user.userName] = newChat.id!!;
+        } else {
+            newChat = olamaWebClient.get("/api/v1/chats/${nameToChat.get(user.userName)}", OChat::class.java).block()!!
         }
+
+        // Отправляем первое сообщение
+        val chatRequest: ChatRequest = mapToRequest(newChat)
+        body = jacksonObjectMapper.writeValueAsString(chatRequest)
+        // Отправляем сообщение, отчет получаем в виде чанков, которые собираются внутри метода
+        olamaWebClient.fetchDataFromServer("/ollama/api/chat", body)
+                .subscribe { result ->
+                    // Засылаем в ТГ
+                    absSender.execute(commander.createMessage(chat.id.toString(), result))
+                    chatRequest.messages.last().content = result
+                    body = jacksonObjectMapper.writeValueAsString(chatRequest)
+                    // Отправляем запрос, что ответ от ламы получен.
+                    olamaWebClient.post("/api/chat/completed", body, String::class.java)
+                            .subscribe { /*res -> println(res.toString()) */ }
+
+                    println("Базу вывели")
+                    olamaWebClient.get("/api/v1/chats/${nameToChat.get(user.userName)}", String::class.java)
+                            .subscribe { res -> println(res.toString()) }
+                }
     }
 
-    private fun olamaChat(arguments: Array<out String>): ChatCreate {
-        val chatFrom = ChatForm(
-                "",
-                listOf("llama3:latest"),
-                1,
-                arguments.joinToString(separator = " ")
-        );
-        return ChatCreate(chatFrom)
+
+    private fun mapToRequest(newChat: OChat): ChatRequest {
+        val newChatData = newChat.chat!!
+        return ChatRequest(
+                newChatData.models.last(),
+                newChatData.messages,
+                HashMap(),
+                false,
+                newChat.id!!)
+    }
+
+    private fun createNewChat(arguments: Array<out String>, userName: String): OChat {
+        val requestMessage = UUID.randomUUID()
+        val responseMessage = UUID.randomUUID()
+        val chatFrom = jacksonObjectMapper.readValue("""
+{
+	"chat": {
+		"history": {
+			"currentId": "${UUID.randomUUID()}",
+			"messages": {
+				"${responseMessage}": {
+					"childrenIds": [],
+					"content": "",
+					"id": "${responseMessage}",
+					"model": "llama3:latest",
+					"modelName": "llama3:latest",
+					"parentId": "${requestMessage}",
+					"role": "assistant",
+					"timestamp": 1720179755,
+					"userContext": null
+				},
+				"${requestMessage}": {
+					"childrenIds": [
+						"${responseMessage}"
+					],
+					"content": "${arguments.joinToString(" ")}",
+					"id": "${requestMessage}",
+					"models": [
+						"llama3:latest"
+					],
+					"parentId": null,
+					"role": "user",
+					"timestamp": 1720179755
+				}
+			}
+		},
+		"id": "",
+		"messages": [
+			{
+				"childrenIds": [
+					"${responseMessage}"
+				],
+				"content": "${arguments.joinToString(" ")}",
+				"id": "${requestMessage}",
+				"models": [
+					"llama3:latest"
+				],
+				"parentId": null,
+				"role": "user",
+				"timestamp": 1720179755
+			},
+			{
+				"childrenIds": [],
+				"content": "",
+				"id": "${responseMessage}",
+				"model": "llama3:latest",
+				"modelName": "llama3:latest",
+				"parentId": "${requestMessage}",
+				"role": "assistant",
+				"timestamp": 1720179755,
+				"userContext": null
+			}
+		],
+		"models": [
+			"llama3:latest"
+		],
+		"options": {},
+		"tags": [],
+		"timestamp": 1720179755061,
+		"title": "${userName}"
+	}
+}
+            """, OChat::class.java)
+        return chatFrom;
     }
 }

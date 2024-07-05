@@ -45,7 +45,8 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-serialization-json
     runtimeOnly group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json', version: '1.7.1', ext: 'pom'
-
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation 'com.google.code.gson:gson:2.8.9'
 }
 
 kotlin {
