@@ -1,6 +1,6 @@
 package olama.api.telegram.model.chat
 
-data class MessageChunk (
+data class MessageChunk(
     val model: String,
     val created_at: String,
     val message: Message,

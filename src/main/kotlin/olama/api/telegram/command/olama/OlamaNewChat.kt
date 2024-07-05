@@ -15,9 +15,9 @@ import java.util.*
 
 @Component
 class OlamaNewChat(
-        var commander: Commander,
-        var olamaWebClient: OlamaWebClient,
-        private val jacksonObjectMapper: ObjectMapper
+    var commander: Commander,
+    var olamaWebClient: OlamaWebClient,
+    private val jacksonObjectMapper: ObjectMapper
 ) : BotCommand(NEW_CHAT.text, "Описание команды") {
 
     val nameToChat: MutableMap<String, String> = HashMap()
@@ -39,36 +39,38 @@ class OlamaNewChat(
         body = jacksonObjectMapper.writeValueAsString(chatRequest)
         // Отправляем сообщение, отчет получаем в виде чанков, которые собираются внутри метода
         olamaWebClient.fetchDataFromServer("/ollama/api/chat", body)
-                .subscribe { result ->
-                    // Засылаем в ТГ
-                    absSender.execute(commander.createMessage(chat.id.toString(), result))
-                    chatRequest.messages.last().content = result
-                    body = jacksonObjectMapper.writeValueAsString(chatRequest)
-                    // Отправляем запрос, что ответ от ламы получен.
-                    olamaWebClient.post("/api/chat/completed", body, String::class.java)
-                            .subscribe { /*res -> println(res.toString()) */ }
+            .subscribe { result ->
+                // Засылаем в ТГ
+                absSender.execute(commander.createMessage(chat.id.toString(), result))
+                chatRequest.messages.last().content = result
+                body = jacksonObjectMapper.writeValueAsString(chatRequest)
+                // Отправляем запрос, что ответ от ламы получен.
+                olamaWebClient.post("/api/chat/completed", body, String::class.java)
+                    .subscribe { /*res -> println(res.toString()) */ }
 
-                    println("Базу вывели")
-                    olamaWebClient.get("/api/v1/chats/${nameToChat.get(user.userName)}", String::class.java)
-                            .subscribe { res -> println(res.toString()) }
-                }
+                println("Базу вывели")
+                olamaWebClient.get("/api/v1/chats/${nameToChat.get(user.userName)}", String::class.java)
+                    .subscribe { res -> println(res.toString()) }
+            }
     }
 
 
     private fun mapToRequest(newChat: OChat): ChatRequest {
         val newChatData = newChat.chat!!
         return ChatRequest(
-                newChatData.models.last(),
-                newChatData.messages,
-                HashMap(),
-                false,
-                newChat.id!!)
+            newChatData.models.last(),
+            newChatData.messages,
+            HashMap(),
+            false,
+            newChat.id!!
+        )
     }
 
     private fun createNewChat(arguments: Array<out String>, userName: String): OChat {
         val requestMessage = UUID.randomUUID()
         val responseMessage = UUID.randomUUID()
-        val chatFrom = jacksonObjectMapper.readValue("""
+        val chatFrom = jacksonObjectMapper.readValue(
+            """
 {
 	"chat": {
 		"history": {
@@ -136,7 +138,8 @@ class OlamaNewChat(
 		"title": "${userName}"
 	}
 }
-            """, OChat::class.java)
+            """, OChat::class.java
+        )
         return chatFrom;
     }
 }

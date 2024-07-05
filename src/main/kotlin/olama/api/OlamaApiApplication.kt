@@ -7,6 +7,6 @@ import org.springframework.boot.runApplication
 class OlamaApiApplication
 
 fun main(args: Array<String>) {
-	runApplication<OlamaApiApplication>(*args)
+    runApplication<OlamaApiApplication>(*args)
 }
 

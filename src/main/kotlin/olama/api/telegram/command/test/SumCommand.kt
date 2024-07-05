@@ -14,10 +14,10 @@ class SumCommand(var commander: Commander) : BotCommand(CommandName.SUM.text, "Ð
         val numbers = arguments.map { it.toInt() }
         val sum = numbers.sum()
         absSender.execute(
-                commander.createMessage(
-                        chat.id.toString(),
-                        numbers.joinToString(separator = " + ", postfix = " = $sum"),
-                )
+            commander.createMessage(
+                chat.id.toString(),
+                numbers.joinToString(separator = " + ", postfix = " = $sum"),
+            )
         )
     }
 }

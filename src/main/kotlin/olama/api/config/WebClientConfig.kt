@@ -14,8 +14,8 @@ class WebClientConfig {
     @Bean
     fun webClient(): WebClient {
         return WebClient.builder()
-                .baseUrl(olamaUrl)
-                .build()
+            .baseUrl(olamaUrl)
+            .build()
     }
 
 }
