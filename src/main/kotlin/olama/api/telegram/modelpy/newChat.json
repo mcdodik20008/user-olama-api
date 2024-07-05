@@ -1,0 +1,67 @@
+{
+  "chat" : {
+    "history" : {
+      "currentId" : "88a50a72-fdbe-4f19-a3dc-4f1d3e7df97e",
+      "messages" : {
+        "6b725e9f-225c-4daa-9ef7-d6d48a192ae3" : {
+          "childrenIds" : [
+            "88a50a72-fdbe-4f19-a3dc-4f1d3e7df97e"
+          ],
+          "content" : "Привет братишка, как дела",
+          "id" : "6b725e9f-225c-4daa-9ef7-d6d48a192ae3",
+          "models" : [
+            "llama3:latest"
+          ],
+          "parentId" : null,
+          "role" : "user",
+          "timestamp" : 1719815731
+        },
+        "88a50a72-fdbe-4f19-a3dc-4f1d3e7df97e" : {
+          "childrenIds" : [],
+          "content" : "",
+          "id" : "88a50a72-fdbe-4f19-a3dc-4f1d3e7df97e",
+          "model" : "llama3:latest",
+          "modelName" : "llama3:latest",
+          "parentId" : "6b725e9f-225c-4daa-9ef7-d6d48a192ae3",
+          "role" : "assistant",
+          "timestamp" : 1719815731,
+          "userContext" : null
+        }
+      }
+    },
+    "id" : "",
+    "messages" : [
+      {
+        "childrenIds" : [
+          "88a50a72-fdbe-4f19-a3dc-4f1d3e7df97e"
+        ],
+        "content" : "Привет братишка, как дела",
+        "id" : "6b725e9f-225c-4daa-9ef7-d6d48a192ae3",
+        "models" : [
+          "llama3:latest"
+        ],
+        "parentId" : null,
+        "role" : "user",
+        "timestamp" : 1719815731
+      },
+      {
+        "childrenIds" : [],
+        "content" : "",
+        "id" : "88a50a72-fdbe-4f19-a3dc-4f1d3e7df97e",
+        "model" : "llama3:latest",
+        "modelName" : "llama3:latest",
+        "parentId" : "6b725e9f-225c-4daa-9ef7-d6d48a192ae3",
+        "role" : "assistant",
+        "timestamp" : 1719815731,
+        "userContext" : null
+      }
+    ],
+    "models" : [
+      "llama3:latest"
+    ],
+    "options" : {},
+    "tags" : [],
+    "timestamp" : 1719815731829,
+    "title" : "New Chat"
+  }
+}

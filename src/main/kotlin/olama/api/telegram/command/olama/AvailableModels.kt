@@ -2,7 +2,7 @@ package olama.api.telegram.command.olama;
 
 import olama.api.http.OlamaWebClient
 import olama.api.telegram.command.CommandName.AVAILABLE_MODELS
-import olama.api.telegram.model.olama.llm.OlamaModels
+import olama.api.telegram.model.LlamaData
 import olama.api.telegram.service.Commander
 import olama.api.telegram.service.TextEditor
 import org.springframework.stereotype.Component
@@ -17,10 +17,10 @@ class AvailableModels(var commander: Commander, var olamaWebClient: OlamaWebClie
 
     override fun execute(absSender: AbsSender, user: User, chat: Chat, arguments: Array<out String>) {
         try {
-            val modelsMono = olamaWebClient.get("/api/models", OlamaModels::class.java)
+            val modelsMono = olamaWebClient.get("/api/models", LlamaData::class.java)
             modelsMono.subscribe { models ->
-                val nameModels = models?.data?.map { x -> x.id }
-                val message = textEditor.createMarkdownList(nameModels.orEmpty())
+                val nameModels = models.data.map { x -> x.name }
+                val message = textEditor.createMarkdownList(nameModels)
                 absSender.execute(commander.createMessage(chat.id.toString(), message))
             }
         } catch (e: Exception) {

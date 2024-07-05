@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component
 class TextEditor {
 
     fun createMarkdownList(strings: List<String>): String {
-        val markdownList = strings.map { "- $it" }.joinToString("\n")
+        val markdownList = strings.joinToString("\n") { "- $it" }
         return "```\n$markdownList\n```"
     }
 
