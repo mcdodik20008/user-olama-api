@@ -39,7 +39,7 @@ class OlamaWebClient(val authService: AuthService, val webClient: WebClient) {
         val gson = Gson()
         println(jsonBody)
         val response: Flux<String> = webClient.post()
-            .uri("/ollama/api/chat")  // Укажите путь к вашему API endpoint
+            .uri(url)
             .body(BodyInserters.fromValue(jsonBody))
             .header("authorization", getToken())
             .header(HttpHeaders.CONTENT_TYPE, "application/json")
@@ -47,15 +47,12 @@ class OlamaWebClient(val authService: AuthService, val webClient: WebClient) {
             .bodyToFlux(String::class.java)
 
         return response
-//                .doOnNext { jsonString ->
-//                    println("Received chunk: $jsonString")  // Логирование каждого чанка
-//                }
-            .map { jsonString ->
+            .handle { jsonString, sink ->
                 try {
-                    gson.fromJson(jsonString, MessageChunk::class.java)
+                    sink.next(gson.fromJson(jsonString, MessageChunk::class.java))
                 } catch (e: Exception) {
                     println("Error parsing chunk: $e")
-                    throw e
+                    sink.error(e)
                 }
             }
             .takeUntil { chunk -> chunk.done }

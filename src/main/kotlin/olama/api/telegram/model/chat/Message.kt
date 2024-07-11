@@ -7,10 +7,11 @@ data class Message(
     val role: String,
     val id: String = UUID.randomUUID().toString(),
     val timestamp: Long? = null,
-    val childrenIds: List<String>? = null,
-    val models: List<String>? = null,
-    val parentId: String? = null,
     val model: String? = null,
     val modelName: String? = null,
+    var childrenIds: List<String>? = null,
+    val models: List<String>? = null,
+    val parentId: String? = null,
+
     val userContext: Any? = null
 )

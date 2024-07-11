@@ -5,10 +5,10 @@ data class OChat(
     val user_id: String?,
     val title: String?,
     val chat: ChatData?,  // Используем существующий класс ChatData
-    val tags: List<String>?,
-    val timestamp: Long?,
-    val updated_at: Long?,
-    val created_at: Long?,
-    val share_id: String?,  // Может быть null, поэтому тип String?
+    val tags: List<String>? = null,
+    val timestamp: Long? = null,
+    val updated_at: Long? = null,
+    val created_at: Long? = null,
+    val share_id: String? = null,  // Может быть null, поэтому тип String?
     val archived: Boolean = false
 )

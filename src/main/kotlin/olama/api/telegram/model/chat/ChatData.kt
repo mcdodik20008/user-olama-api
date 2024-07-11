@@ -1,12 +1,13 @@
 package olama.api.telegram.model.chat
 
 data class ChatData(
-    val history: History?,
     val id: String,
+    val title: String,
+    val history: History?,
     val messages: MutableList<Message>,
-    val models: List<String>,
-    val options: Map<String, Any>,
-    val tags: List<String>,
-    val timestamp: Long,
-    val title: String
+    val models: List<String>? = null,
+    val options: Map<String, Any>? = null,
+    val tags: List<String>? = null,
+    val timestamp: Long? = null,
+
 )

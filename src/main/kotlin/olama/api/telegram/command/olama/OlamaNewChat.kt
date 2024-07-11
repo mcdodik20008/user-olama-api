@@ -3,14 +3,14 @@ package olama.api.telegram.command.olama;
 import com.fasterxml.jackson.databind.ObjectMapper
 import olama.api.http.OlamaWebClient
 import olama.api.telegram.command.CommandName.NEW_CHAT
-import olama.api.telegram.model.chat.ChatRequest
-import olama.api.telegram.model.chat.OChat
+import olama.api.telegram.model.chat.*
 import olama.api.telegram.service.Commander
 import org.springframework.stereotype.Component
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand
 import org.telegram.telegrambots.meta.api.objects.Chat
 import org.telegram.telegrambots.meta.api.objects.User
 import org.telegram.telegrambots.meta.bots.AbsSender
+import java.time.LocalDate
 import java.util.*
 
 @Component
@@ -58,7 +58,7 @@ class OlamaNewChat(
     private fun mapToRequest(newChat: OChat): ChatRequest {
         val newChatData = newChat.chat!!
         return ChatRequest(
-            newChatData.models.last(),
+            newChatData.models?.last()!!,
             newChatData.messages,
             HashMap(),
             false,
@@ -67,6 +67,36 @@ class OlamaNewChat(
     }
 
     private fun createNewChat(arguments: Array<out String>, userName: String): OChat {
+
+        val userMsg =
+            Message(
+                arguments.joinToString(" "),
+                "user",
+                UUID.randomUUID().toString(),
+                LocalDate.now().toEpochDay(),
+                "llama3:latest",
+                "llama3:latest",
+                ArrayList(),
+                null, null
+            )
+        val assistMsg =
+            Message(
+                "",
+                "assistant",
+                UUID.randomUUID().toString(),
+                LocalDate.now().toEpochDay(),
+                "llama3:latest",
+                "llama3:latest",
+                ArrayList(),
+                null, userMsg.id
+            )
+        userMsg.childrenIds = listOf(assistMsg.id)
+
+        val history =
+            History(UUID.randomUUID().toString(), mapOf(Pair(assistMsg.id, assistMsg), Pair(userMsg.id, userMsg)))
+        val chatData = ChatData("", "",history, listOf(userMsg, assistMsg).toMutableList())
+        val oChat = OChat(null, null, null, chatData)
+
         val requestMessage = UUID.randomUUID()
         val responseMessage = UUID.randomUUID()
         val chatFrom = jacksonObjectMapper.readValue(
